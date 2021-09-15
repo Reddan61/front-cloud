@@ -1,12 +1,14 @@
-import { createStore } from 'vuex'
+import { createStore } from "vuex"
+import { authModule } from "./auth.module"
+import { filesModule } from "./files.module"
 
-export default createStore({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+
+const store = createStore({
+    modules: {
+        auth: authModule,
+        files: filesModule
+    }
 })
+
+
+export default store
