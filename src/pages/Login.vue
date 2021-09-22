@@ -6,14 +6,18 @@
             </div>
             <form @submit.prevent class="login__form">
                 <custom-input class="login__input" label = "Введите имя" v-model="username" />
-                <custom-input class="login__input" label = "Введите пароль" v-model="password" />
-                <custom-button class="login__btn" @click = "checkUser">Отправить</custom-button>
+                <custom-input class="login__input" type = "password" label = "Введите пароль" v-model="password" />
+                <div class="login__btns">
+                    <custom-button class="login__btn" @click = "fetchLogin">Отправить</custom-button>
+                    <router-link to = "/register">Создать</router-link>
+                </div>
             </form>
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions } from "vuex"
 import CustomButton from '../components/UI/CustomButton.vue'
 
 export default {
@@ -25,8 +29,20 @@ export default {
         }
     },
     methods: {
-        checkUser() {
-            console.log('login')
+        ...mapActions({
+            login:"auth/login"
+        }),
+        async fetchLogin() {
+            const form = {
+                username: this.username,
+                password: this.password
+            }
+
+            const response = await this.login(form)
+
+            if(response.message === "success") {
+                this.$router.push("/")
+            }
         }
     }
 }
@@ -56,8 +72,16 @@ export default {
         &__input {
           font-size: 20px;
         }
-        &__btn {
-            margin: 10px 0 0;
+        &__btns {
+            display: flex;
+            padding: 10px 0 0;
+            justify-content: space-between;
+            align-items: center;
+            a {
+                &:visited {
+                    color:#606060;
+                }
+            }
         }
     }
    

@@ -6,15 +6,20 @@
             </div>
             <form @submit.prevent class="register__form">
                 <custom-input class="register__input" label = "Введите имя" v-model="username" />
-                <custom-input class="register__input" label = "Введите пароль" v-model="password" />
-                <custom-input class="register__input" label = "Повторите пароль" v-model="confirmPassword" />
-                <custom-button class="register__btn" @click = "register">Отправить</custom-button>
+                <custom-input class="register__input" type = "password" label = "Введите пароль" v-model="password" />
+                <custom-input class="register__input" type = "password" label = "Повторите пароль" v-model="confirmPassword" />
+                <div class="register__btns">
+                    <custom-button class="register__btn" @click = "fetchRegister">Отправить</custom-button>
+                    <router-link to = "/login">Войти</router-link>
+                </div>
             </form>
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions } from "vuex"
+
 export default {
     data() {
         return {
@@ -24,14 +29,29 @@ export default {
         }
     },
     methods: {
-        register() {
-            console.log("register")
+        ...mapActions({
+            register: "auth/register"
+        }),
+        async fetchRegister() {
+            const form = {
+                username: this.username,
+                password: this.password,
+                confirmPassword: this.confirmPassword
+            }
+
+            const response = await this.register(form)
+
+            if(response.message = "success") {
+                this.$router.push("/login")
+            } else {
+                alert("Что-то пошло не так!")
+            }
         }
     }
 }
 </script>
 
-<style scoped lang = "scss">
+<style scoped lang="scss">
     .register {
         width: 100%;
         min-height: 100vh;
@@ -55,8 +75,16 @@ export default {
         &__input {
           font-size: 20px;
         }
-        &__btn {
-            margin: 10px 0 0;
+        &__btns {
+            display: flex;
+            padding: 10px 0 0;
+            justify-content: space-between;
+            align-items: center;
+            a {
+                &:visited {
+                    color:#606060;
+                }
+            }
         }
     }
 </style>

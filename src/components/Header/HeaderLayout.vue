@@ -4,8 +4,8 @@
             <header class="header">
                 <div></div>
                 <div class="header__card card">
-                    <span class="card__name">{{ user.username }}</span>
-                    <icon-exit class = "icon__exit" />
+                    <span class="card__name">{{ user?.username }}</span>
+                    <icon-exit class = "icon__exit" @click = "fetchLogout" />
                 </div>
             </header>
             <div class="app__body">
@@ -16,10 +16,24 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapState, mapActions } from "vuex"
 import IconExit from '@/components/svg/IconExit.vue'
 export default {
   components: { IconExit },
+    methods: {
+        ...mapActions({
+            logout: "auth/logout"
+        }),
+        async fetchLogout() {
+            const response = await this.logout()
+
+            if(response.message === "success") {
+                this.$router.push("/login")
+            } else {
+                alert("Что-то пошло не так!")
+            }
+        }
+    },
     computed: {
         ...mapState({
             isAuth: state => state.auth.isAuth,

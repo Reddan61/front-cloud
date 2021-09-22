@@ -3,7 +3,7 @@
         <div class="input__wrapped">
             <input class="input__item" :class="{
                 input__item_hide: !reposPlaceholder
-            }" :value = "modelValue" @input = "updateInput"/>
+            }" :value = "modelValue" @input = "updateInput" :type = "type" />
             <span class="input__placeholder"> {{ label }} </span>
         </div>
         <div class="input__line"></div>
@@ -18,6 +18,10 @@ export default {
         label: {
             type:String,
             required:true
+        },
+        type: {
+            type:String,
+            default: "text"
         }
     },
     data() {
