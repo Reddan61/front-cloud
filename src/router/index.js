@@ -3,7 +3,7 @@ import store from "@/store"
 import Login from "@/pages/Login.vue"
 import Register from "@/pages/Register.vue"
 import Index from "@/pages/Index.vue"
-import { authApi } from "@/axios/API.ts"
+import { authApi } from "@/axios/API.js"
 
 const routes = [
     {

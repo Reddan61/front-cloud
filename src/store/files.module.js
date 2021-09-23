@@ -1,14 +1,14 @@
+import { filesApi } from "@/axios/API.js"
+
 export const filesModule = {
     state: () => ({
-        files:null,
-        path:[{
-            id:10,
-            name:"TEST FOLDER"
-        }]
+        files:[],
+        folders:[],
+        path:[]
     }),
     getters: {
         getPath(state) {
-            return state.path.length === 0 ? "/" : `/${state.path.map(el => el.name).join("/")}`
+            return state.path.length === 0 ? "/" : `/${state.path.map(el => el.foldername).join("/")}`
         }
     },
     mutations: {
@@ -20,60 +20,44 @@ export const filesModule = {
         },
         setFiles(state,files) {
             state.files = files
+        },
+        setFolders(state,folders) {
+            state.folders = folders
+        },
+        addFolder(state,folder) {
+            state.folders.push(folder)
         }
     },
     actions: {
-        getFiles({state,commit},file = null) {
-            if(!file) {
-                commit("setFiles", file ? testInfo2 : testInfo)
-                return
-            }
-
-            const index = state.path.findIndex(el => el.id === file.id)
-            if(index !== -1) {
-                commit("deletePath")
-            } else {
-                commit("addPath",file)
-            }
-
-            commit("setFiles", file ? testInfo2 : testInfo)
+        async getFiles({state,commit},folder = null) {
+           const response = await filesApi.getFiles(folder)
+           if(response.message === "success") {
+            commit("setFiles",response.payload.data.files)
+            commit("setFolders",response.payload.data.folders)
+           }
         },
-    }
+        async createFolder({state,commit},foldername = "test") {
+            const rootId = state.path[state.path.length - 1]?._id
+            const response = await filesApi.createFolder(rootId,foldername)
+            if(response.message === "success") {
+                commit("addFolder",response.payload.data)
+            }
+        },
+        async deleteFolder({state,commit, dispatch},_id) {
+            const response = await filesApi.deleteFolder(_id)
+            if(response.message === "success") {
+                await dispatch("getFiles",state.path[state.path.length - 1]?._id)
+            }
+        }
+    },
+    namespaced:true
 }
 
 
 const testInfo = [
-    {
-        id:1,
-        type:"folder",
-        name:"SAMPLE FOLDER"
-    },
-    {
-        id:2,
-        type:"txt",
-        name:"text"
-    },
-    {
-        id:3,
-        type:"image",
-        name:"PHOTO"
-    },
-    {
-        id:4,
-        type:"dsdao",
-        name:"PHOTO"
-    }
+  
 ]
 
 const testInfo2 = [
-    {
-        id:2,
-        type:"txt",
-        name:"text"
-    },
-    {
-        id:3,
-        type:"image",
-        name:"PHOTO"
-    }
+    
 ]

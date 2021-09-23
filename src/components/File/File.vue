@@ -1,7 +1,6 @@
 <template>
   <div class="file">
-      <icon-folder @click = "getFiles(file)"  v-if="file.type === 'folder'" class="icon icon__folder"/>
-      <img v-else-if="file.type === 'image'" :alt = 'image' :src = "testImage" class = "image" />
+      <img v-if="file.type === 'image'" :alt = 'image' :src = "testImage" class = "image" />
       <icon-txt v-else-if="file.type === 'txt'" class="icon icon__txt" />
       <div v-else>Неизвестный формат</div>
       <span>{{file.name}}</span>

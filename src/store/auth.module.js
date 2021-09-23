@@ -1,4 +1,4 @@
-import { authApi } from "@/axios/API.ts"
+import { authApi } from "@/axios/API.js"
 
 export const authModule = {
     state: () => ({
@@ -11,9 +11,9 @@ export const authModule = {
         }
     },
     mutations: {
-        async fetchAuth(state,user,isAuth) {
-            state.isAuth = isAuth
-            state.user = user
+        async fetchAuth(state,payload) {
+            state.isAuth = payload.isAuth
+            state.user = payload.user
         }
     },
     actions: {
@@ -25,16 +25,24 @@ export const authModule = {
         async login({state,commit}, form) {
             const response = await authApi.login(form)
             if(response.message === "success") {
-                commit("fetchAuth",response.payload.data, true)
+                const payload = {
+                    isAuth:true,
+                    user: response.payload.data
+                }
+                commit("fetchAuth", payload)
             }
 
             return response
         },
-        async me({state,commit}, form) {
+        async me({state,commit}) {
             const response = await authApi.me()
 
             if(response.message === "success") {
-                commit("fetchAuth",response.payload.data, true)
+                const payload = {
+                    isAuth:true,
+                    user: response.payload.data
+                }
+                commit("fetchAuth", payload)
             }
 
             return response
@@ -43,7 +51,12 @@ export const authModule = {
             const response = await authApi.logout()
 
             if(response.message === "success") {
-                commit("fetchAuth",null, false)
+                const payload = {
+                    isAuth:false,
+                    user: null
+                }
+
+                commit("fetchAuth",payload)
             }
 
             return response

@@ -48,3 +48,47 @@ export const authApi = {
         }
     }
 }
+
+export const filesApi = {
+    getFiles: async (folder) => {
+        try {
+            const response = await instance.get("files/", {
+                params: {
+                    folder
+                }
+            })
+            return response.data
+        } catch(e) {
+            return {
+                message:"error"
+            }
+        }
+    }, 
+    createFolder: async (rootId,foldername) => {
+        try {
+            const response = await instance.post("files/folder", {
+                foldername,
+                folder:rootId
+            })
+            return response.data
+        } catch(e) {
+            return {
+                message:"error"
+            }
+        }
+    },
+    deleteFolder: async (_id) => {
+        try {
+            const response = await instance.delete("files/folder", {
+                data: {
+                    folders:[_id]
+                }
+            })
+            return response.data
+        } catch(e) {
+            return {
+                message:"error"
+            }
+        }
+    }
+}
