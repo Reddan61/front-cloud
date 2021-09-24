@@ -31,14 +31,17 @@ export default {
     },
     methods: {
         ...mapActions({
-            deleteFolder: "files/deleteFolder"
+            deleteFolders: "files/deleteFolders",
+            deleteFiles: "files/deleteFiles"
         }),
         create() {
             this.$emit("create-folder")
         },
         deleteClick() {
             if(this.type === "folder") {
-                this.deleteFolder(this._id)
+                this.deleteFolders(this._id)
+            } else if(this.type === "file") {
+                this.deleteFiles(this._id)
             }
         }
     },

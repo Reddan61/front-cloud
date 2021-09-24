@@ -26,6 +26,9 @@ export const filesModule = {
         },
         addFolder(state,folder) {
             state.folders.push(folder)
+        },
+        addFiles(state,files) {
+            state.files.push(...files)
         }
     },
     actions: {
@@ -43,8 +46,21 @@ export const filesModule = {
                 commit("addFolder",response.payload.data)
             }
         },
-        async deleteFolder({state,commit, dispatch},_id) {
+        async deleteFolders({state,commit, dispatch},_id) {
             const response = await filesApi.deleteFolder(_id)
+            if(response.message === "success") {
+                await dispatch("getFiles",state.path[state.path.length - 1]?._id)
+            }
+        },
+        async uploadFiles({state,commit},payload) {
+            const rootId = payload.folderId ? payload.folderId : state.path[state.path.length - 1]?._id
+            const response = await filesApi.uploadFiles(payload.files,rootId)
+            if(response.message === "success" && !payload.folderId) {
+                commit("addFiles",response.payload.data)
+            }
+        },
+        async deleteFiles({state,commit,dispatch},_id) {
+            const response = await filesApi.deleteFiles(_id)
             if(response.message === "success") {
                 await dispatch("getFiles",state.path[state.path.length - 1]?._id)
             }

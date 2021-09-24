@@ -42,6 +42,8 @@ export default {
 
             if(response.message === "success") {
                 this.$router.push("/")
+            } else {
+                alert("Что-то пошло не так!")
             }
         }
     }

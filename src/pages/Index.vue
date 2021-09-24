@@ -5,17 +5,21 @@
                 <span @click = "getFiles(path[path.length - 1])">Назад</span>
                 {{ getPath }}
             </div>
-            <div class="main__items" @contextmenu.prevent="openmenu">
-                <div v-if="!files[0] && !folders[0] && !isCreatingFolder">
-                    Пусто
+            <div class="main__container" @contextmenu.prevent="openmenu" 
+                    @dragenter.prevent @dragover.prevent
+                    @drop="onDragDrop">
+                <div class="main__items">
+                    <div v-if="!files[0] && !folders[0] && !isCreatingFolder">
+                        Пусто
+                    </div>
+                    <folder v-for="folder in folders" :key="folder._id" :folder = "folder" />
+                    <file v-for="file in files" :key="file._id" :file = "file" />
+                    <folder 
+                        v-if = "isCreatingFolder" 
+                        :isCreating = "isCreatingFolder" 
+                        @create = "createFolderByEmit"
+                    />
                 </div>
-                <folder v-for="folder in folders" :key="folder._id" :folder = "folder" />
-                <file v-for="file in files" :key="file._id" :file = "file" />
-                <folder 
-                    v-if = "isCreatingFolder" 
-                    :isCreating = "isCreatingFolder" 
-                    @create = "createFolderByEmit"
-                />
             </div>
             
         </div>
@@ -50,6 +54,7 @@ export default {
     ...mapActions({
         getFiles: 'files/getFiles',
         createFolder: "files/createFolder",
+        uploadFiles: "files/uploadFiles"
     }),
     openmenu(e) {
         this.type = null
@@ -57,6 +62,9 @@ export default {
         if(e.target.closest(".folder")){
             this.type = "folder"
             this.clickedId = e.target.closest(".folder")?.classList[1]
+        } else if(e.target.closest(".file")){
+            this.type = "file"
+            this.clickedId = e.target.closest(".file")?.classList[1]
         }
         this.isShowMenu = !this.isShowMenu
         this.cursorPosition = [e.pageX,e.pageY]
@@ -67,6 +75,19 @@ export default {
     async createFolderByEmit(foldername) {
         this.isCreatingFolder = false
         await this.createFolder(foldername)
+    },
+    onDragDrop(e) {
+        e.preventDefault()
+        const maxSize = 1 * 1024 * 1024 * 10
+        const files = e.dataTransfer.files
+        const filesFiltred = [...files].filter(el => el.type !== "" && el.size <= maxSize)
+        
+        if(e.target.closest(".folder")) {
+            const folderId = e.target.closest(".folder")?.classList[1]
+            this.uploadFiles({files:filesFiltred,folderId})
+            return
+        }
+        this.uploadFiles({files:filesFiltred})
     }
   },
   computed: {
@@ -96,11 +117,14 @@ export default {
             font-size: 30px;
             padding: 0 0 20px;
         }
-        &__items {
-            display: flex;
-            flex-wrap: wrap;
-            gap:20px;
+        &__container {
             min-height: calc(100vh - (70px + 40px + 50px));
+        }
+        &__items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,80px);
+            column-gap: 20px;
+            row-gap: 20px;
         }
     }
 </style>

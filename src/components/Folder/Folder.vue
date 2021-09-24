@@ -40,8 +40,10 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     span {  
-      margin: 10px 0 0 ;
+      flex: 1 1 auto;
+      padding: 10px 0 0 ;
       max-width: 80px;
       word-wrap: break-word;
       text-align: center;

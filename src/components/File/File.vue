@@ -1,17 +1,16 @@
 <template>
-  <div class="file">
-      <img v-if="file.type === 'image'" :alt = 'image' :src = "testImage" class = "image" />
-      <icon-txt v-else-if="file.type === 'txt'" class="icon icon__txt" />
-      <div v-else>Неизвестный формат</div>
-      <span>{{file.name}}</span>
+  <div class="file" :class="file?._id">
+      <img v-if="file.mimetype.search('image') !== -1" alt = 'image' :src = "imageSrc" class = "image" />
+      <icon-txt v-else class="icon icon__txt" />
+      <span>{{file.filename}}</span>
   </div>
 </template>
 
 <script>
 import { mapActions } from "vuex"
+import { config } from "@/config"
 import IconFolder from '@/components/svg/IconFolder.vue'
 import IconTxt from '@/components/svg/IconTxt.vue'
-import testImage from "@/public/test.jpg"
 
 export default {
   components: {
@@ -22,25 +21,33 @@ export default {
   },
   data() {
     return {
-      testImage
     }
   },
   methods: {
     ...mapActions({
       getFiles: 'getFiles'
     })
+  },
+  computed: {
+    imageSrc: function () {
+      return `${config.apiUrl}/${this.file.uploadname}`
+    }
   }
 }
 </script>
 
-<style lang = "scss" scoped>
+<style lang="scss" scoped>
   .file {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     span {  
-      margin: 10px 0 0  ;
+      flex: 1 1 auto;
+      margin: 10px 0 0;
       max-width: 80px;
+      word-break: break-all;
+      text-align: center;
     }
   }
   .icon {

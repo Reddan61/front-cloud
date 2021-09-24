@@ -1,8 +1,8 @@
 import axios from "axios"
-
+import { config } from "@/config"
 const instance = axios.create({
     withCredentials:true,
-    baseURL:"http://localhost:8888/"
+    baseURL:`${config.apiUrl}/`
 })
 
 
@@ -84,6 +84,35 @@ export const filesApi = {
                     folders:[_id]
                 }
             })
+            return response.data
+        } catch(e) {
+            return {
+                message:"error"
+            }
+        }
+    },
+    deleteFiles: async (_id) => {
+        try {
+            const response = await instance.delete("files/files", {
+                data: {
+                    files:[_id]
+                }
+            })
+            return response.data
+        } catch(e) {
+            return {
+                message:"error"
+            }
+        }
+    },
+    uploadFiles:async (files,folderId) => {
+        try {
+            const formdata = new FormData()
+            if(folderId) {
+                formdata.set("folder",folderId)
+            }
+            files.forEach(el => formdata.append("files",el))
+            const response = await instance.post("files/upload",formdata)
             return response.data
         } catch(e) {
             return {
