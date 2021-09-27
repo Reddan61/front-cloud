@@ -2,15 +2,15 @@
     <header-layout>
         <div class="main">
             <div class="main__path">
-                <span @click = "getFiles(path[path.length - 1])">Назад</span>
+                <span @click = "clickBack">Назад</span>
                 {{ getPath }}
             </div>
             <div class="main__container" @contextmenu.prevent="openmenu" 
                     @dragenter.prevent @dragover.prevent
                     @drop="onDragDrop">
-                <div class="main__items">
+                <div class="main__items" @click = "clickedItem">
                     <div v-if="!files[0] && !folders[0] && !isCreatingFolder">
-                        Пусто
+                        Перетащите сюда файлы
                     </div>
                     <folder v-for="folder in folders" :key="folder._id" :folder = "folder" />
                     <file v-for="file in files" :key="file._id" :file = "file" />
@@ -24,17 +24,17 @@
             
         </div>
         <custom-menu 
-            :_id = "clickedId" 
-            :type = "type" 
+            :type = "type"
             :isShow = "isShowMenu" 
             :mousePosition = "cursorPosition"
             @create-folder = "this.isCreatingFolder = true"
+            @delete = "clearClick"
         />
     </header-layout>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex"
+import { mapState, mapGetters, mapActions, mapMutations } from "vuex"
 import HeaderLayout from "@/components/Header/HeaderLayout.vue"
 import File from "@/components/File/File.vue"
 import Folder from "@/components/Folder/Folder.vue"
@@ -45,7 +45,6 @@ export default {
       return {
           isShowMenu:false,
           cursorPosition: [],
-          clickedId:null,
           type:null,
           isCreatingFolder:false
       }
@@ -56,21 +55,46 @@ export default {
         createFolder: "files/createFolder",
         uploadFiles: "files/uploadFiles"
     }),
+    ...mapMutations({
+        deletePath: "files/deletePath",
+        addChoosedFiles: "files/addChoosedFiles",
+        addChoosedFolders: "files/addChoosedFolders",
+        clearChoosedFilesNFolder: "files/clearChoosedFilesNFolder"
+    }),
+    clickedItem(e) {
+        e.stopPropagation()
+        const pressedCtrl = e.ctrlKey
+        if(pressedCtrl) {
+            if(e.target.closest(".folder")) {
+                this.addChoosedFolders({folder:e.target.closest(".folder")?.classList[1]})
+            } else if(e.target.closest(".file")){
+                this.addChoosedFiles({file:e.target.closest(".file")?.classList[1]})
+            }
+        } else {
+            this.clearClick()
+        }
+    },
     openmenu(e) {
         this.type = null
-        this.clickedId = null
         if(e.target.closest(".folder")){
             this.type = "folder"
-            this.clickedId = e.target.closest(".folder")?.classList[1]
+            const id = e.target.closest(".folder")?.classList[1]
+            this.addChoosedFolders({folder:id,isRightClick:true})
         } else if(e.target.closest(".file")){
             this.type = "file"
-            this.clickedId = e.target.closest(".file")?.classList[1]
+            const id = e.target.closest(".file")?.classList[1]
+            this.addChoosedFiles({file:id,isRightClick:true})
+        }
+        if(this.isShowMenu) {
+            this.clearClick()
+            return
         }
         this.isShowMenu = !this.isShowMenu
         this.cursorPosition = [e.pageX,e.pageY]
     },
     clearClick(e) {
         this.isShowMenu = false
+        this.clearChoosedFilesNFolder()
     },
     async createFolderByEmit(foldername) {
         this.isCreatingFolder = false
@@ -88,6 +112,9 @@ export default {
             return
         }
         this.uploadFiles({files:filesFiltred})
+    },
+    clickBack(e) {
+        this.deletePath()
     }
   },
   computed: {
@@ -98,11 +125,21 @@ export default {
     }),
     ...mapGetters({
         getPath: "files/getPath"
-    })  
+    }),
   },
   mounted() {
       this.getFiles()
       document.addEventListener("click",this.clearClick)
+
+      this.$store.watch(
+          state => state.files.path,
+          (oldValue,newValue) => {
+            this.getFiles(newValue[newValue.length - 1]?._id)
+          },
+          {
+              deep:true
+          }
+      )
   },
   beforeUnmount() {
       document.removeEventListener("click",this.clearClick)
@@ -116,13 +153,16 @@ export default {
         &__path {
             font-size: 30px;
             padding: 0 0 20px;
+            span {
+                cursor:pointer;
+            }
         }
         &__container {
             min-height: calc(100vh - (70px + 40px + 50px));
         }
         &__items {
             display: grid;
-            grid-template-columns: repeat(auto-fill,80px);
+            grid-template-columns: repeat(auto-fill,90px);
             column-gap: 20px;
             row-gap: 20px;
         }

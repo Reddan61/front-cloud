@@ -4,7 +4,11 @@ export const filesModule = {
     state: () => ({
         files:[],
         folders:[],
-        path:[]
+        path:[],
+        choosedFilesNFolders: {
+            files:[],
+            folders:[]
+        }
     }),
     getters: {
         getPath(state) {
@@ -29,6 +33,49 @@ export const filesModule = {
         },
         addFiles(state,files) {
             state.files.push(...files)
+        },
+        addChoosedFiles(state,payload) {
+            const file = payload.file
+            const isRightClick = payload.isRightClick
+
+            const filtered = state.choosedFilesNFolders.files.filter(el => el !== file)
+
+            if(state.choosedFilesNFolders.files.length !== filtered.length && !isRightClick) {
+                state.choosedFilesNFolders = {
+                    ... state.choosedFilesNFolders,
+                    files: filtered
+                } 
+                return
+            }
+            
+            state.choosedFilesNFolders = {
+                ... state.choosedFilesNFolders,
+                files: [... state.choosedFilesNFolders.files, file ]
+            }
+        },
+        addChoosedFolders(state,payload) {
+            const folder = payload.folder
+            const isRightClick = payload.isRightClick
+
+            const filtered = state.choosedFilesNFolders.folders.filter(el => el !== folder)
+
+            if(state.choosedFilesNFolders.folders.length !== filtered.length && !isRightClick) {
+                state.choosedFilesNFolders = {
+                    ... state.choosedFilesNFolders,
+                    folders: filtered
+                } 
+                return
+            }
+            state.choosedFilesNFolders = {
+                ... state.choosedFilesNFolders,
+                folders: [... state.choosedFilesNFolders.folders, folder ]
+            }
+        },
+        clearChoosedFilesNFolder(state) {
+            state.choosedFilesNFolders = {
+                files:[],
+                folders:[]
+            }
         }
     },
     actions: {
@@ -46,11 +93,10 @@ export const filesModule = {
                 commit("addFolder",response.payload.data)
             }
         },
-        async deleteFolders({state,commit, dispatch},_id) {
-            const response = await filesApi.deleteFolder(_id)
-            if(response.message === "success") {
-                await dispatch("getFiles",state.path[state.path.length - 1]?._id)
-            }
+        async delete({state,commit, dispatch}) {
+            const response1 = await filesApi.deleteFolder(state.choosedFilesNFolders.folders)
+            const response2 = await filesApi.deleteFiles(state.choosedFilesNFolders.files)
+            await dispatch("getFiles",state.path[state.path.length - 1]?._id)
         },
         async uploadFiles({state,commit},payload) {
             const rootId = payload.folderId ? payload.folderId : state.path[state.path.length - 1]?._id
@@ -59,21 +105,12 @@ export const filesModule = {
                 commit("addFiles",response.payload.data)
             }
         },
-        async deleteFiles({state,commit,dispatch},_id) {
-            const response = await filesApi.deleteFiles(_id)
-            if(response.message === "success") {
-                await dispatch("getFiles",state.path[state.path.length - 1]?._id)
+        async downloadFilesNFolders({ state }) {
+            const response = await filesApi.download(state.choosedFilesNFolders)
+            if(response.message === "error") {
+                alert("Что-то пошло не так!")
             }
-        }
+        } 
     },
     namespaced:true
 }
-
-
-const testInfo = [
-  
-]
-
-const testInfo2 = [
-    
-]

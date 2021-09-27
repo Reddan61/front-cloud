@@ -4,6 +4,9 @@
           <span class="menu__item" v-if="!type" @click = "create">
               Создать папку
           </span>
+          <span class="menu__item" @click="download">
+              Скачать
+          </span>
           <span class="menu__item" @click="deleteClick">
               Удалить
           </span>
@@ -24,25 +27,23 @@ export default {
         },
         type: {
             required:true
-        },
-        _id: {
-            required:true
-        },
+        }
     },
     methods: {
         ...mapActions({
-            deleteFolders: "files/deleteFolders",
-            deleteFiles: "files/deleteFiles"
+            delete: "files/delete",
+            downloadFilesNFolders: "files/downloadFilesNFolders"
         }),
         create() {
             this.$emit("create-folder")
         },
-        deleteClick() {
-            if(this.type === "folder") {
-                this.deleteFolders(this._id)
-            } else if(this.type === "file") {
-                this.deleteFiles(this._id)
-            }
+        async deleteClick(e) {
+            e.stopPropagation()
+            await this.delete()
+            this.$emit("delete")
+        },
+        download(e) {
+            this.downloadFilesNFolders()
         }
     },
     watch: {

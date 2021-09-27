@@ -77,11 +77,12 @@ export const filesApi = {
             }
         }
     },
-    deleteFolder: async (_id) => {
+    deleteFolder: async (ids) => {
         try {
+            console.log(ids)
             const response = await instance.delete("files/folder", {
                 data: {
-                    folders:[_id]
+                    folders:ids
                 }
             })
             return response.data
@@ -91,11 +92,11 @@ export const filesApi = {
             }
         }
     },
-    deleteFiles: async (_id) => {
+    deleteFiles: async (ids) => {
         try {
             const response = await instance.delete("files/files", {
                 data: {
-                    files:[_id]
+                    files:ids
                 }
             })
             return response.data
@@ -113,6 +114,22 @@ export const filesApi = {
             }
             files.forEach(el => formdata.append("files",el))
             const response = await instance.post("files/upload",formdata)
+            return response.data
+        } catch(e) {
+            return {
+                message:"error"
+            }
+        }
+    },
+    download:async (filesNFolders) => {
+        try {
+            const response = await instance.post("files/download",filesNFolders, {
+               responseType: 'arraybuffer'
+            })
+            var blob = new Blob([response.data], {type : "application/zip"});
+            var objectUrl = URL.createObjectURL(blob);
+            window.open(objectUrl);
+
             return response.data
         } catch(e) {
             return {
