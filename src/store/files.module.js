@@ -86,9 +86,10 @@ export const filesModule = {
             commit("setFolders",response.payload.data.folders)
            }
         },
-        async createFolder({state,commit},foldername = "test") {
+        async createFolder({state,commit},foldername = "") {
             const rootId = state.path[state.path.length - 1]?._id
             const response = await filesApi.createFolder(rootId,foldername)
+          
             if(response.message === "success") {
                 commit("addFolder",response.payload.data)
             }

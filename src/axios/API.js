@@ -79,7 +79,6 @@ export const filesApi = {
     },
     deleteFolder: async (ids) => {
         try {
-            console.log(ids)
             const response = await instance.delete("files/folder", {
                 data: {
                     folders:ids

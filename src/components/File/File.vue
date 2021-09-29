@@ -2,7 +2,7 @@
   <div class="file" :class="[file?._id, choosedFiles.indexOf(file?._id) !== -1 ? 'file_active' :'']">
       <img v-if="file.mimetype.search('image') !== -1" alt = 'image' :src = "imageSrc" class = "image" />
       <icon-txt v-else class="icon icon__txt" />
-      <span>{{file.filename}}</span>
+      <span>{{file.filename.length > 50 ? `${file.filename.slice(0,50)}...` : file.filename}}</span>
   </div>
 </template>
 

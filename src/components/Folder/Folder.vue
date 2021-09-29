@@ -1,7 +1,7 @@
 <template>
   <div class="folder" :class="[folder?._id, choosedFolders.indexOf(folder?._id) !== -1 ? 'folder_active' :'']" @click = "clickedFolder">
       <icon-folder class="icon icon__folder"/>
-      <span v-if="!isCreating">{{folder.foldername}}</span>
+      <span v-if="!isCreating">{{folder.foldername.length > 50 ? `${folder.foldername.slice(0,50)}...` : folder.foldername}}</span>
       <input class = "folder__input" v-else v-model="input" v-focus
       @keyup.enter="$event.target.blur()" @blur = "createFolder" />
   </div>

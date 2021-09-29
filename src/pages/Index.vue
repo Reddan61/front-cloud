@@ -8,10 +8,10 @@
             <div class="main__container" @contextmenu.prevent="openmenu" 
                     @dragenter.prevent @dragover.prevent
                     @drop="onDragDrop">
+                <div v-if="!files[0] && !folders[0] && !isCreatingFolder">
+                    Перетащите сюда файлы
+                </div>
                 <div class="main__items" @click = "clickedItem">
-                    <div v-if="!files[0] && !folders[0] && !isCreatingFolder">
-                        Перетащите сюда файлы
-                    </div>
                     <folder v-for="folder in folders" :key="folder._id" :folder = "folder" />
                     <file v-for="file in files" :key="file._id" :file = "file" />
                     <folder 
@@ -150,6 +150,7 @@ export default {
 <style lang="scss" scoped>
     .main {
         width:100%;
+        padding: 0 10px;
         &__path {
             font-size: 30px;
             padding: 0 0 20px;
@@ -158,7 +159,7 @@ export default {
             }
         }
         &__container {
-            min-height: calc(100vh - (70px + 40px + 50px));
+            min-height: calc(100vh - (70px + 20px + 50px));
         }
         &__items {
             display: grid;
