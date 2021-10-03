@@ -4,9 +4,16 @@
             <input class="input__item" :class="{
                 input__item_hide: !reposPlaceholder
             }" :value = "modelValue" @input = "updateInput" :type = "type" />
-            <span class="input__placeholder"> {{ label }} </span>
+            <span class="input__placeholder" 
+                :class="{
+                    input__placeholder_error: error
+                }"
+            > {{ label }} </span>
         </div>
         <div class="input__line"></div>
+        <span class="input__errorMessage" v-if = "error">
+            {{ errors }}
+        </span>
     </div>
 </template>
 
@@ -22,6 +29,14 @@ export default {
         type: {
             type:String,
             default: "text"
+        },
+        error: {
+            type:Boolean,
+            default:false
+        },
+        errors: {
+            type: String,
+            default: ""
         }
     },
     data() {
@@ -71,11 +86,19 @@ export default {
             font-size: 1em;
             left: 0;
             transform: translateY(-50%);
+            &_error {
+                color:red;
+            }
         }
         &__line {
             width: 100%;
             height: 1px;
             background: black;
+        }
+        &__errorMessage {
+            font-size: 12px;
+            padding: 5px 0 0 5px;
+            color:red;
         }
     }
 </style>

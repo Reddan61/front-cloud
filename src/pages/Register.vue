@@ -5,9 +5,21 @@
                 Регистрация
             </div>
             <form @submit.prevent class="register__form">
-                <custom-input class="register__input" label = "Введите имя" v-model="username" />
-                <custom-input class="register__input" type = "password" label = "Введите пароль" v-model="password" />
-                <custom-input class="register__input" type = "password" label = "Повторите пароль" v-model="confirmPassword" />
+                <custom-input 
+                    class="register__input" label = "Введите имя" v-model="username" 
+                    :error = "v$.username.$error"
+                    :errors = "v$.username.$errors[0]?.$message" 
+                />
+                <custom-input 
+                    class="register__input" type = "password" label = "Введите пароль" v-model="password" 
+                    :error = "v$.password.$error"
+                    :errors = "v$.password.$errors[0]?.$message" 
+                />
+                <custom-input 
+                    class="register__input" type = "password" label = "Повторите пароль" v-model="confirmPassword" 
+                    :error = "v$.confirmPassword.$error"
+                    :errors = "v$.confirmPassword.$errors[0]?.$message" 
+                />
                 <div class="register__btns">
                     <custom-button class="register__btn" @click = "fetchRegister">Отправить</custom-button>
                     <router-link to = "/login">Войти</router-link>
@@ -19,13 +31,32 @@
 
 <script>
 import { mapActions } from "vuex"
+import useValidate from "@vuelidate/core"
+import { minLength, maxLength, required, helpers, sameAs } from "@vuelidate/validators"
 
 export default {
     data() {
         return {
+            v$:useValidate(),
             username:"",
             password:"",
             confirmPassword:""
+        }
+    },
+    validations() {
+       return{
+            username: { 
+                required: helpers.withMessage("Необходимое поле",required),
+                minLength: helpers.withMessage("Имя слишком короткое",minLength(3)), 
+                maxLength: helpers.withMessage("Имя слишком длинное",maxLength(30))
+            },
+            password: {
+                required: helpers.withMessage("Необходимое поле",required),
+                minLength: helpers.withMessage("Пароль слишком короткий",minLength(3))
+            },
+            confirmPassword: {
+                sameAs: helpers.withMessage("Пароли должны совпадать",sameAs(this.password))
+            }
         }
     },
     methods: {
@@ -33,6 +64,11 @@ export default {
             register: "auth/register"
         }),
         async fetchRegister() {
+            this.v$.$validate()
+            if(this.v$.$error) {
+                return
+            }
+
             const form = {
                 username: this.username,
                 password: this.password,
@@ -40,8 +76,8 @@ export default {
             }
 
             const response = await this.register(form)
-
-            if(response.message = "success") {
+            
+            if(response.message === "success") {
                 this.$router.push("/login")
             } else {
                 alert("Что-то пошло не так!")

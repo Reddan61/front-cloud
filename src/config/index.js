@@ -1,3 +1,4 @@
 export const config = {
-    apiUrl: "http://localhost:8888"
+    apiUrl: "https://pure-meadow-59316.herokuapp.com"
+    // apiUrl: "http://localhost:8888"
 }

@@ -25,13 +25,15 @@ export default {
             logout: "auth/logout"
         }),
         async fetchLogout() {
-            const response = await this.logout()
+            this.logout()
 
-            if(response.message === "success") {
-                this.$router.push("/login")
-            } else {
-                alert("Что-то пошло не так!")
-            }
+            this.$router.push("/login")
+
+            // if(response.message === "success") {
+            //     this.$router.push("/login")
+            // } else {
+            //     alert("Что-то пошло не так!")
+            // }
         }
     },
     computed: {
