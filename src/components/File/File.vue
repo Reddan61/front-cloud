@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex"
+import { mapActions, mapState } from "vuex"
 import { config } from "@/config"
 import IconFolder from '@/components/svg/IconFolder.vue'
 import IconTxt from '@/components/svg/IconTxt.vue'

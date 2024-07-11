@@ -1,17 +1,10 @@
 import axios from "axios"
 import { config } from "@/config"
-const instance = axios.create({
-    // withCredentials:true,
-    baseURL:`${config.apiUrl}/`,
-    // headers: {
-    //     Authorization: `Bearer ${localStorage.getItem("token")}`
-    // }
-})
 
-instance.interceptors.request.use(function (config) {
-    config.headers["Authorization"] = "Bearer " + localStorage.getItem('token')
-    return config;
-});
+const instance = axios.create({
+    baseURL:`${config.apiUrl}/`,
+    withCredentials: true,
+})
 
 export const authApi = {
     me: async () => {
@@ -37,7 +30,6 @@ export const authApi = {
     login: async (form) => {
         try {
             const response = await instance.post("auth/login", form)
-
             return response.data
         } catch(e) {
             return {

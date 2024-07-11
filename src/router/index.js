@@ -3,16 +3,15 @@ import store from "@/store"
 import Login from "@/pages/Login.vue"
 import Register from "@/pages/Register.vue"
 import Index from "@/pages/Index.vue"
-import { authApi } from "@/axios/API.js"
 
 const routes = [
     {
         path:'/login',
-        component:Login
+        component: Login
     },
     {
         path:'/register',
-        component:Register
+        component: Register
     },
     {
         path:'/',
@@ -30,7 +29,7 @@ const router = createRouter({
     history: createWebHistory(process.env.BASE_URL)
 })
 
-router.beforeEach(async (to,from,next) => {
+router.beforeEach(async (to, from, next) => {
     const response = await store.dispatch("auth/me")
     const requiredAuth = to.matched.some(el => el.meta.auth)
     if(response.message === "error" && requiredAuth) {

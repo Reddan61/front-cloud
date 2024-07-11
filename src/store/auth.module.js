@@ -5,11 +5,6 @@ export const authModule = {
         isAuth:false,
         user: null
     }),
-    getters: {
-        test(state,getters) {
-            
-        }
-    },
     mutations: {
         async fetchAuth(state,payload) {
             state.isAuth = payload.isAuth
@@ -17,18 +12,18 @@ export const authModule = {
         }
     },
     actions: {
-        async register({state,commit}, form) {
+        async register({state, commit}, form) {
             const response = await authApi.register(form)
             return response
         },
-        async login({state,commit}, form) {
+        async login({state, commit}, form) {
             const response = await authApi.login(form)
             if(response.message === "success") {
                 const payload = {
                     isAuth:true,
                     user: response.payload.data.user
                 }
-                localStorage.setItem("token",response.payload.data.token)
+
                 commit("fetchAuth", payload)
             }
 
@@ -48,24 +43,18 @@ export const authModule = {
             return response
         },
         async logout({ commit }) {
-            // const response = await authApi.logout()
-            const payload = {
-                isAuth:false,
-                user: null
+            const response = await authApi.logout()
+
+            if(response.message === "success") {
+                const payload = {
+                    isAuth:false,
+                    user: null
+                }
+
+                commit("fetchAuth",payload)
             }
-            commit("fetchAuth",payload)
-            localStorage.removeItem("token")
-            // if(response.message === "success") {
-            //     const payload = {
-            //         isAuth:false,
-            //         user: null
-            //     }
 
-            //     commit("fetchAuth",payload)
-            // }
-
-            // return response
-            return true
+            return response
         }
     },
     namespaced: true

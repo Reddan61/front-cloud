@@ -11,6 +11,6 @@ components.forEach(el => {
     app.component(el.name,el)
 })
 
-app.directive('focus',Vfocus)
+app.directive('focus', Vfocus)
 
 app.use(router).use(store).mount('#app')

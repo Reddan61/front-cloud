@@ -34,7 +34,7 @@ export default {
   components: { CustomButton },
     data() {
         return {
-            v$:useValidate(),
+            v$: useValidate(),
             username: "",
             password:""
         }
@@ -54,7 +54,7 @@ export default {
     },
     methods: {
         ...mapActions({
-            login:"auth/login"
+            login: "auth/login"
         }),
         async fetchLogin() {
             this.v$.$validate()

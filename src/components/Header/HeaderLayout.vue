@@ -18,6 +18,7 @@
 <script>
 import { mapState, mapActions } from "vuex"
 import IconExit from '@/components/svg/IconExit.vue'
+
 export default {
   components: { IconExit },
     methods: {
@@ -25,15 +26,9 @@ export default {
             logout: "auth/logout"
         }),
         async fetchLogout() {
-            this.logout()
+            await this.logout()
 
             this.$router.push("/login")
-
-            // if(response.message === "success") {
-            //     this.$router.push("/login")
-            // } else {
-            //     alert("Что-то пошло не так!")
-            // }
         }
     },
     computed: {
