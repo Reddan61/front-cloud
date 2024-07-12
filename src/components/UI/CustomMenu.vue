@@ -67,11 +67,11 @@ export default {
             font-size: 20px;
         }
         &__item {
+            margin: 10px 0 0;
+            cursor: pointer;
             &:first-child{
                 margin:0;
             }
-            margin: 10px 0 0;
-            cursor: pointer;
         }
     }
 </style>

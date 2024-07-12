@@ -1,6 +1,8 @@
 <template>
   <div class="button">
-    <button  class="button__item"> <slot></slot> </button>  
+    <button class="button__item" :class="{
+      button__item_disabled: disabled
+    }"> <slot></slot> </button>  
   </div>
 </template>
 
@@ -8,7 +10,10 @@
 export default {
     name:"custom-button",
     props: {
-      
+      disabled: {
+        default: false,
+        type: Boolean
+      }
     }
 }
 </script>
@@ -20,6 +25,10 @@ export default {
             background: royalblue;
             padding: .5em 1em;
             border-radius: 5px;
+
+            &_disabled {
+              background: gray;
+            }
         }
     }
 </style>

@@ -3,10 +3,16 @@ import { authApi } from "@/axios/API.js"
 export const authModule = {
     state: () => ({
         isAuth:false,
-        user: null
+        user: null,
+        loading: false
     }),
     mutations: {
-        async fetchAuth(state,payload) {
+        setLoading(state, payload) {
+            if (state.loading === payload.loading) return;
+
+            state.loading = payload.loading;
+        },
+        fetchAuth(state, payload) {
             state.isAuth = payload.isAuth
             state.user = payload.user
         }
@@ -29,7 +35,8 @@ export const authModule = {
 
             return response
         },
-        async me({state,commit}) {
+        async me({state, commit}) {
+            commit("setLoading", { loading: true });
             const response = await authApi.me()
 
             if(response.message === "success") {
@@ -37,12 +44,17 @@ export const authModule = {
                     isAuth:true,
                     user: response.payload.data
                 }
+
                 commit("fetchAuth", payload)
             }
+
+            commit("setLoading", { loading: false });
 
             return response
         },
         async logout({ commit }) {
+            commit("setLoading", { loading: true });
+
             const response = await authApi.logout()
 
             if(response.message === "success") {
@@ -54,6 +66,8 @@ export const authModule = {
                 commit("fetchAuth",payload)
             }
 
+            commit("setLoading", { loading: false });
+            
             return response
         }
     },

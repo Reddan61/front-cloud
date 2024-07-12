@@ -8,7 +8,8 @@ export const filesModule = {
         choosedFilesNFolders: {
             files:[],
             folders:[]
-        }
+        },
+        loading: false
     }),
     getters: {
         getPath(state) {
@@ -16,6 +17,11 @@ export const filesModule = {
         }
     },
     mutations: {
+        setLoading(state, { loading }) {
+            if (state.loading === loading) return;
+
+            state.loading = loading;
+        },
         addPath(state,file) {
             state.path.push(file)
         },
@@ -80,11 +86,15 @@ export const filesModule = {
     },
     actions: {
         async getFiles({state,commit},folder = null) {
-           const response = await filesApi.getFiles(folder)
-           if(response.message === "success") {
-            commit("setFiles",response.payload.data.files)
-            commit("setFolders",response.payload.data.folders)
-           }
+            commit("setLoading", { loading: true });
+            const response = await filesApi.getFiles(folder)
+
+            if(response.message === "success") {
+                commit("setFiles",response.payload.data.files)
+                commit("setFolders",response.payload.data.folders)
+            }
+
+            commit("setLoading", { loading: false });
         },
         async createFolder({state,commit},foldername = "") {
             const rootId = state.path[state.path.length - 1]?._id

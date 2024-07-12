@@ -21,8 +21,10 @@
                     :errors = "v$.confirmPassword.$errors[0]?.$message" 
                 />
                 <div class="register__btns">
-                    <custom-button class="register__btn" @click = "fetchRegister">Отправить</custom-button>
-                    <router-link to = "/login">Войти</router-link>
+                    <custom-button class="register__btn" @click = "fetchRegister" :disabled="sending">Отправить</custom-button>
+                    <router-link :class="{
+                        register__login_disabled: sending
+                    }" to = "/login">Войти</router-link>
                 </div>
             </form>
         </div>
@@ -40,22 +42,23 @@ export default {
             v$:useValidate(),
             username:"",
             password:"",
-            confirmPassword:""
+            confirmPassword:"",
+            sending: false
         }
     },
     validations() {
        return{
             username: { 
-                required: helpers.withMessage("Необходимое поле",required),
-                minLength: helpers.withMessage("Имя слишком короткое",minLength(3)), 
-                maxLength: helpers.withMessage("Имя слишком длинное",maxLength(30))
+                required: helpers.withMessage("Необходимое поле", required),
+                minLength: helpers.withMessage("Имя слишком короткое", minLength(3)), 
+                maxLength: helpers.withMessage("Имя слишком длинное", maxLength(30))
             },
             password: {
                 required: helpers.withMessage("Необходимое поле",required),
-                minLength: helpers.withMessage("Пароль слишком короткий",minLength(3))
+                minLength: helpers.withMessage("Пароль слишком короткий", minLength(3))
             },
             confirmPassword: {
-                sameAs: helpers.withMessage("Пароли должны совпадать",sameAs(this.password))
+                sameAs: helpers.withMessage("Пароли должны совпадать", sameAs(this.password))
             }
         }
     },
@@ -64,6 +67,8 @@ export default {
             register: "auth/register"
         }),
         async fetchRegister() {
+            if (this.sending) return;
+
             this.v$.$validate()
             if(this.v$.$error) {
                 return
@@ -74,8 +79,9 @@ export default {
                 password: this.password,
                 confirmPassword: this.confirmPassword
             }
-
+            this.sending = true;
             const response = await this.register(form)
+            this.sending = false;
             
             if(response.message === "success") {
                 this.$router.push("/login")
@@ -121,6 +127,9 @@ export default {
                     color:#606060;
                 }
             }
+        }
+        &__login_disabled {
+            pointer-events: none;
         }
     }
 </style>

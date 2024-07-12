@@ -16,7 +16,9 @@ const routes = [
     {
         path:'/',
         component: Index,
-        meta: {auth:true}
+        meta: { 
+            auth:true 
+        }
     },
     {
         path: "/:catchAll(.*)",
@@ -32,6 +34,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     const response = await store.dispatch("auth/me")
     const requiredAuth = to.matched.some(el => el.meta.auth)
+
     if(response.message === "error" && requiredAuth) {
         next("/login")
         return

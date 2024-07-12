@@ -16,8 +16,10 @@
                     :errors = "v$.password.$errors[0]?.$message" 
                 />
                 <div class="login__btns">
-                    <custom-button class="login__btn" @click = "fetchLogin">Отправить</custom-button>
-                    <router-link to = "/register">Создать</router-link>
+                    <custom-button class="login__btn" @click = "fetchLogin" :disabled="sending">Отправить</custom-button>
+                    <router-link :class="{
+                        login__register_disabled: sending
+                    }" to = "/register">Создать</router-link>
                 </div>
             </form>
         </div>
@@ -36,19 +38,20 @@ export default {
         return {
             v$: useValidate(),
             username: "",
-            password:""
+            password:"",
+            sending: false
         }
     },
     validations() {
        return{
             username: { 
-                required: helpers.withMessage("Необходимое поле",required),
-                minLength: helpers.withMessage("Имя слишком короткое",minLength(3)), 
-                maxLength: helpers.withMessage("Имя слишком длинное",maxLength(30))
+                required: helpers.withMessage("Необходимое поле", required),
+                minLength: helpers.withMessage("Имя слишком короткое", minLength(3)), 
+                maxLength: helpers.withMessage("Имя слишком длинное", maxLength(30))
             },
             password: {
-                required: helpers.withMessage("Необходимое поле",required),
-                minLength: helpers.withMessage("Пароль слишком короткий",minLength(3))
+                required: helpers.withMessage("Необходимое поле", required),
+                minLength: helpers.withMessage("Пароль слишком короткий", minLength(3))
             }
         }
     },
@@ -57,16 +60,21 @@ export default {
             login: "auth/login"
         }),
         async fetchLogin() {
+            if (this.sending) return;
+
             this.v$.$validate()
             if(this.v$.$error) {
                 return
             }
+
             const form = {
                 username: this.username,
                 password: this.password
             }
-
+            
+            this.sending = true;
             const response = await this.login(form)
+            this.sending = false;
 
             if(response.message === "success") {
                 this.$router.push("/")
@@ -112,6 +120,9 @@ export default {
                     color:#606060;
                 }
             }
+        }
+        &__register_disabled {
+            pointer-events: none;
         }
     }
    

@@ -1,16 +1,31 @@
 <template>
-  <div>
-    <router-view></router-view>
+  <div class="wrapper">
+    <Loader v-if="loading"/>
+    <router-view v-else></router-view>
   </div>
 </template>
 
-<script>
-export default {
+<script setup>
+  import { computed } from 'vue'
+  import { useStore } from 'vuex'
+  import Loader from "./components/svg/IconPacMan"
 
-}
+  const store = useStore();
+
+  const loading = computed(() => {
+    return store.state.auth.loading;
+  })
 </script>
 
 <style lang = "scss">
+  .wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   *{
     padding: 0;
     margin: 0;

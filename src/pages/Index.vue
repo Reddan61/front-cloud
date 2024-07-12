@@ -8,10 +8,13 @@
             <div class="main__container" @contextmenu.prevent="openmenu" 
                     @dragenter.prevent @dragover.prevent
                     @drop="onDragDrop">
-                <div v-if="!files[0] && !folders[0] && !isCreatingFolder">
+                <div class="loader" v-if="loading">
+                    <Loader />
+                </div>
+                <div v-else-if="isEmpty && !isCreatingFolder">
                     Перетащите сюда файлы
                 </div>
-                <div class="main__items" @click = "clickedItem">
+                <div class="main__items" @click = "clickedItem" v-else>
                     <folder v-for="folder in folders" :key="folder._id" :folder = "folder" />
                     <file v-for="file in files" :key="file._id" :file = "file" />
                     <folder 
@@ -38,9 +41,10 @@ import { mapState, mapGetters, mapActions, mapMutations } from "vuex"
 import HeaderLayout from "@/components/Header/HeaderLayout.vue"
 import File from "@/components/File/File.vue"
 import Folder from "@/components/Folder/Folder.vue"
+import Loader from "@/components/svg/IconPacMan.vue"
 
 export default {
-  components: { HeaderLayout, File, Folder },
+  components: { HeaderLayout, File, Folder, Loader },
   data() {
       return {
           isShowMenu:false,
@@ -121,11 +125,15 @@ export default {
     ...mapState({
         files: state => state.files.files,
         folders:state => state.files.folders,
-        path: state => state.files.path
+        path: state => state.files.path,
+        loading: state => state.files.loading
     }),
     ...mapGetters({
         getPath: "files/getPath"
     }),
+    isEmpty: function() {
+        return !this.files[0] && !this.folders[0];
+    }
   },
   mounted() {
       this.getFiles()
@@ -134,6 +142,7 @@ export default {
       this.$store.watch(
           state => state.files.path,
           (oldValue,newValue) => {
+            console.log('watch')
             this.getFiles(newValue[newValue.length - 1]?._id)
           },
           {
@@ -167,5 +176,11 @@ export default {
             column-gap: 20px;
             row-gap: 20px;
         }
+    }
+
+    .loader {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 </style>
