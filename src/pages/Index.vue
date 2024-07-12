@@ -142,7 +142,6 @@ export default {
       this.$store.watch(
           state => state.files.path,
           (oldValue,newValue) => {
-            console.log('watch')
             this.getFiles(newValue[newValue.length - 1]?._id)
           },
           {
